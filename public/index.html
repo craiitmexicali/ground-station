@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta
+      name="description"
+      content="Ground Station - GUI de monitoreo en tiempo real para vehículos autónomos con simulación de hardware integrada"
+    />
+    <meta name="keywords" content="ground station, telemetry, autonomous vehicles, robotics, ESP32, Arduino" />
+    <meta name="author" content="CRAI Team" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Ground Station - Telemetría de Vehículos Autónomos" />
+    <meta property="og:description" content="Interfaz de monitoreo en tiempo real con simulación de hardware" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <title>Ground Station | Telemetría de Vehículos Autónomos</title>
+    
+    <style>
+      /* Loading screen */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0f172a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+      }
+      
+      #loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      .loading-logo {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: float 2s ease-in-out infinite;
+      }
+      
+      .loading-text {
+        color: #e2e8f0;
+        font-family: 'Inter', sans-serif;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+      }
+      
+      .loading-bar {
+        width: 200px;
+        height: 4px;
+        background: #1e293b;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      
+      .loading-bar-fill {
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        border-radius: 2px;
+        animation: loading 1.5s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      
+      @keyframes loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(400%); }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+    
+    <!-- Loading screen -->
+    <div id="loading-screen">
+      <div class="loading-logo">🛰️</div>
+      <div class="loading-text">Ground Station</div>
+      <div class="loading-bar">
+        <div class="loading-bar-fill"></div>
+      </div>
+    </div>
+    
+    <div id="root"></div>
+    
+    <script>
+      // Hide loading screen when app is ready
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          document.getElementById('loading-screen').classList.add('hidden');
+        }, 500);
+      });
+    </script>
+  </body>
+</html>
