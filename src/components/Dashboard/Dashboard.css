@@ -1,66 +1,264 @@
+/* ==========================================
+   DASHBOARD - GROUND STATION CRAI
+   Sistema de Monitoreo de Vehículos Autónomos
+   ========================================== */
+
 .dashboard {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 1.5rem;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-.dashboard-row {
+/* Section Header */
+.section-header {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0 0.5rem;
 }
 
-/* Fila de Gauges */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title-icon {
+  font-size: 1.5rem;
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Status Pill */
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.status-pill.connected, .status-pill.simulating {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.status-pill.connected .status-dot, .status-pill.simulating .status-dot {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.status-pill.disconnected {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.status-pill.disconnected .status-dot {
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Dashboard Row */
+.dashboard-row {
+  display: grid;
+  gap: 1.25rem;
+}
+
 .gauges-row {
-  justify-content: center;
+  grid-template-columns: repeat(4, 1fr);
 }
 
-.gauge-card {
-  flex: 1;
-  min-width: 200px;
-  max-width: 280px;
-}
-
-/* Fila de gráficos */
 .charts-row {
-  justify-content: stretch;
+  grid-template-columns: repeat(2, 1fr);
 }
 
-.chart-card {
-  flex: 1;
-  min-width: 300px;
-  height: 250px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  padding: 1rem;
-}
-
-/* Fila de motores */
 .motors-row {
-  justify-content: stretch;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.motor-card {
-  flex: 1;
-  min-width: 200px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+/* Card Base Styles */
+.gauge-card,
+.chart-card,
+.motor-card,
+.stats-card {
+  position: relative;
+  background: linear-gradient(145deg, 
+    rgba(30, 41, 59, 0.95), 
+    rgba(15, 23, 42, 0.98)
+  );
+  border-radius: 20px;
   padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(99, 102, 241, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.gauge-card:nth-child(1) { animation-delay: 0.1s; }
+.gauge-card:nth-child(2) { animation-delay: 0.15s; }
+.gauge-card:nth-child(3) { animation-delay: 0.2s; }
+.gauge-card:nth-child(4) { animation-delay: 0.25s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gauge-card::before,
+.chart-card::before,
+.motor-card::before,
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(99, 102, 241, 0.5), 
+    transparent
+  );
+}
+
+.gauge-card:hover,
+.chart-card:hover,
+.motor-card:hover,
+.stats-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(99, 102, 241, 0.1);
+}
+
+/* Card Glow Effects */
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  border-radius: 20px;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.gauge-card:hover .card-glow {
+  opacity: 0.2;
+}
+
+.card-glow.battery {
+  background: radial-gradient(circle at 50% 0%, #10b981 0%, transparent 60%);
+}
+
+.card-glow.temperature {
+  background: radial-gradient(circle at 50% 0%, #f97316 0%, transparent 60%);
+}
+
+.card-glow.speed {
+  background: radial-gradient(circle at 50% 0%, #3b82f6 0%, transparent 60%);
+}
+
+.card-glow.current {
+  background: radial-gradient(circle at 50% 0%, #8b5cf6 0%, transparent 60%);
+}
+
+/* Chart Card */
+.chart-card {
+  min-height: 320px;
+  animation-delay: 0.3s;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.chart-icon {
+  font-size: 1.25rem;
+}
+
+.chart-header span:last-child {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.chart-content {
+  height: 250px;
+}
+
+/* Motor Card */
+.motor-card {
   text-align: center;
+  animation-delay: 0.35s;
+}
+
+.motor-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.motor-icon {
+  font-size: 1.25rem;
 }
 
 .motor-card h3 {
-  font-size: 0.875rem;
+  margin: 0;
+  font-size: 1rem;
   font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  color: #e2e8f0;
 }
 
 .motor-value {
@@ -74,135 +272,167 @@
 .rpm-value {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #3b82f6;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .rpm-unit {
   font-size: 1rem;
   color: #64748b;
+  font-weight: 500;
 }
 
 .motor-bar {
   height: 8px;
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 10px;
   overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
 .motor-bar-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  border-radius: 10px;
+  transition: width 0.5s ease;
 }
 
 .motor-bar-fill.left {
   background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
 .motor-bar-fill.right {
   background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
 }
 
-/* Card de estadísticas */
+.motor-percentage {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Stats Card */
 .stats-card {
-  flex: 1.5;
-  min-width: 300px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  animation-delay: 0.4s;
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.stats-icon {
+  font-size: 1.25rem;
 }
 
 .stats-card h3 {
-  font-size: 0.875rem;
+  margin: 0;
+  font-size: 1rem;
   font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  color: #e2e8f0;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+  flex: 1;
 }
 
 .stat-item {
   display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.08);
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.stat-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
 }
 
 .stat-label {
   font-size: 0.75rem;
   color: #64748b;
+  font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
-  font-size: 1.125rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: #f1f5f9;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 .stat-value.status-connected {
-  color: #22c55e;
+  color: #10b981;
 }
 
 .stat-value.status-disconnected {
   color: #ef4444;
 }
 
-.stat-value.status-connecting {
-  color: #eab308;
+/* Responsive */
+@media (max-width: 1400px) {
+  .gauges-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* Responsive */
+@media (max-width: 1024px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .motors-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard {
     padding: 1rem;
   }
-
-  .dashboard-row {
+  
+  .gauges-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-header {
     flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
   }
-
-  .gauge-card,
-  .chart-card,
-  .motor-card,
-  .stats-card {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .chart-card {
-    height: 200px;
+  
+  .section-title h2 {
+    font-size: 1.25rem;
   }
 }
-
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.gauge-card,
-.chart-card,
-.motor-card,
-.stats-card {
-  animation: fadeIn 0.5s ease forwards;
-}
-
-.gauge-card:nth-child(1) { animation-delay: 0.1s; }
-.gauge-card:nth-child(2) { animation-delay: 0.2s; }
-.gauge-card:nth-child(3) { animation-delay: 0.3s; }
-.gauge-card:nth-child(4) { animation-delay: 0.4s; }

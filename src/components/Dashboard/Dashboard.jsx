@@ -20,11 +20,29 @@ const Dashboard = ({
     distancia = 0
   } = telemetryData || {};
 
+  const getStatusClass = () => {
+    if (isSimulating) return 'simulating';
+    return connectionStatus;
+  };
+
   return (
     <div className="dashboard">
+      {/* Header de sección con indicadores */}
+      <div className="section-header">
+        <div className="section-title">
+          <span className="title-icon">📊</span>
+          <h2>Telemetría en Tiempo Real</h2>
+        </div>
+        <div className={`status-pill ${getStatusClass()}`}>
+          <span className="status-dot"></span>
+          {isSimulating ? 'Modo Simulación' : connectionStatus === 'connected' ? 'En Línea' : 'Desconectado'}
+        </div>
+      </div>
+
       {/* Fila de Gauges principales */}
       <div className="dashboard-row gauges-row">
         <div className="gauge-card">
+          <div className="card-glow battery"></div>
           <GaugeChart
             value={parseFloat(voltaje)}
             minValue={9.0}
@@ -37,6 +55,7 @@ const Dashboard = ({
         </div>
         
         <div className="gauge-card">
+          <div className="card-glow temperature"></div>
           <GaugeChart
             value={parseFloat(temperatura)}
             minValue={20}
@@ -49,24 +68,26 @@ const Dashboard = ({
         </div>
         
         <div className="gauge-card">
+          <div className="card-glow speed"></div>
           <GaugeChart
             value={parseFloat(velocidad)}
             minValue={0}
             maxValue={3}
             title="Velocidad"
             unit="m/s"
-            type="default"
+            type="speed"
           />
         </div>
 
         <div className="gauge-card">
+          <div className="card-glow current"></div>
           <GaugeChart
             value={parseFloat(corriente)}
             minValue={0}
             maxValue={20}
             title="Corriente"
             unit="A"
-            type="default"
+            type="current"
             colorThresholds={{ warning: 12, danger: 16, inverted: false }}
           />
         </div>
@@ -75,34 +96,47 @@ const Dashboard = ({
       {/* Fila de gráficos de línea */}
       <div className="dashboard-row charts-row">
         <div className="chart-card">
-          <LineChart
-            data={historyData.voltaje || []}
-            title="Voltaje de Batería"
-            yAxisLabel="Voltaje (V)"
-            color="#22c55e"
-            fillColor="rgba(34, 197, 94, 0.1)"
-            minY={9}
-            maxY={13}
-          />
+          <div className="chart-header">
+            <span className="chart-icon">⚡</span>
+            <span>Voltaje de Batería</span>
+          </div>
+          <div className="chart-content">
+            <LineChart
+              data={historyData.voltaje || []}
+              yAxisLabel="Voltaje (V)"
+              color="#10b981"
+              fillColor="rgba(16, 185, 129, 0.15)"
+              minY={9}
+              maxY={13}
+            />
+          </div>
         </div>
         
         <div className="chart-card">
-          <LineChart
-            data={historyData.temperatura || []}
-            title="Temperatura"
-            yAxisLabel="Temp (°C)"
-            color="#f97316"
-            fillColor="rgba(249, 115, 22, 0.1)"
-            minY={20}
-            maxY={80}
-          />
+          <div className="chart-header">
+            <span className="chart-icon">🌡️</span>
+            <span>Temperatura</span>
+          </div>
+          <div className="chart-content">
+            <LineChart
+              data={historyData.temperatura || []}
+              yAxisLabel="Temp (°C)"
+              color="#f97316"
+              fillColor="rgba(249, 115, 22, 0.15)"
+              minY={20}
+              maxY={80}
+            />
+          </div>
         </div>
       </div>
 
       {/* Fila de datos de motores */}
       <div className="dashboard-row motors-row">
         <div className="motor-card">
-          <h3>Motor Izquierdo</h3>
+          <div className="motor-header">
+            <span className="motor-icon">⚙️</span>
+            <h3>Motor Izquierdo</h3>
+          </div>
           <div className="motor-value">
             <span className="rpm-value">{rpmLeft}</span>
             <span className="rpm-unit">RPM</span>
@@ -110,13 +144,17 @@ const Dashboard = ({
           <div className="motor-bar">
             <div 
               className="motor-bar-fill left"
-              style={{ width: `${(rpmLeft / 3000) * 100}%` }}
+              style={{ width: `${Math.min((rpmLeft / 3000) * 100, 100)}%` }}
             />
           </div>
+          <div className="motor-percentage">{((rpmLeft / 3000) * 100).toFixed(0)}%</div>
         </div>
         
         <div className="motor-card">
-          <h3>Motor Derecho</h3>
+          <div className="motor-header">
+            <span className="motor-icon">⚙️</span>
+            <h3>Motor Derecho</h3>
+          </div>
           <div className="motor-value">
             <span className="rpm-value">{rpmRight}</span>
             <span className="rpm-unit">RPM</span>
@@ -124,31 +162,47 @@ const Dashboard = ({
           <div className="motor-bar">
             <div 
               className="motor-bar-fill right"
-              style={{ width: `${(rpmRight / 3000) * 100}%` }}
+              style={{ width: `${Math.min((rpmRight / 3000) * 100, 100)}%` }}
             />
           </div>
+          <div className="motor-percentage">{((rpmRight / 3000) * 100).toFixed(0)}%</div>
         </div>
 
         <div className="stats-card">
-          <h3>Estadísticas</h3>
+          <div className="stats-header">
+            <span className="stats-icon">📈</span>
+            <h3>Estadísticas</h3>
+          </div>
           <div className="stats-grid">
             <div className="stat-item">
-              <span className="stat-label">Distancia</span>
-              <span className="stat-value">{parseFloat(distancia).toFixed(1)} m</span>
+              <div className="stat-icon">📍</div>
+              <div className="stat-content">
+                <span className="stat-label">Distancia</span>
+                <span className="stat-value">{parseFloat(distancia).toFixed(2)} m</span>
+              </div>
             </div>
             <div className="stat-item">
-              <span className="stat-label">Tiempo activo</span>
-              <span className="stat-value">{formatUptime(historyData.startTime)}</span>
+              <div className="stat-icon">⏱️</div>
+              <div className="stat-content">
+                <span className="stat-label">Tiempo activo</span>
+                <span className="stat-value">{formatUptime(historyData.startTime)}</span>
+              </div>
             </div>
             <div className="stat-item">
-              <span className="stat-label">Estado</span>
-              <span className={`stat-value status-${connectionStatus}`}>
-                {isSimulating ? '🔬 Simulación' : connectionStatus}
-              </span>
+              <div className="stat-icon">🔗</div>
+              <div className="stat-content">
+                <span className="stat-label">Estado</span>
+                <span className={`stat-value status-${connectionStatus}`}>
+                  {isSimulating ? '🔬 Simulación' : connectionStatus === 'connected' ? '✓ Conectado' : '✗ Offline'}
+                </span>
+              </div>
             </div>
             <div className="stat-item">
-              <span className="stat-label">Paquetes</span>
-              <span className="stat-value">{historyData.packetCount || 0}</span>
+              <div className="stat-icon">📦</div>
+              <div className="stat-content">
+                <span className="stat-label">Paquetes</span>
+                <span className="stat-value">{historyData.packetCount || 0}</span>
+              </div>
             </div>
           </div>
         </div>

@@ -16,25 +16,26 @@ const GaugeChart = ({
   const clampedPercentage = Math.max(0, Math.min(100, percentage));
   
   // Determinar color basado en tipo y umbrales
-  const getColor = () => {
+  // Determinar color y estado basado en tipo y umbrales
+  const getColorAndStatus = () => {
     if (colorThresholds) {
       const { warning, danger, inverted } = colorThresholds;
       if (inverted) {
         // Para batería: alto es bueno
-        if (value >= danger) return '#22c55e'; // verde
-        if (value >= warning) return '#eab308'; // amarillo
-        return '#ef4444'; // rojo
+        if (value >= danger) return { color: '#10b981', status: 'good' };
+        if (value >= warning) return { color: '#f59e0b', status: 'warning' };
+        return { color: '#ef4444', status: 'danger' };
       } else {
         // Para temperatura: bajo es bueno
-        if (value >= danger) return '#ef4444'; // rojo
-        if (value >= warning) return '#eab308'; // amarillo
-        return '#22c55e'; // verde
+        if (value >= danger) return { color: '#ef4444', status: 'danger' };
+        if (value >= warning) return { color: '#f59e0b', status: 'warning' };
+        return { color: '#10b981', status: 'good' };
       }
     }
-    return percentageToColor(clampedPercentage);
+    return { color: percentageToColor(clampedPercentage), status: 'good' };
   };
 
-  const color = getColor();
+  const { color, status } = getColorAndStatus();
   
   // Calcular el ángulo para el arco del gauge (180 grados = semicírculo)
   const angle = (clampedPercentage / 100) * 180;
@@ -65,7 +66,7 @@ const GaugeChart = ({
     : null;
 
   return (
-    <div className="gauge-container">
+    <div className="gauge-container" data-type={type} data-status={status}>
       <div className="gauge-title">{title}</div>
       <div className="gauge-svg-container">
         <svg viewBox="0 0 200 120" className="gauge-svg">
@@ -73,8 +74,8 @@ const GaugeChart = ({
           <path
             d={describeArc(100, 100, 80, 0, 180)}
             fill="none"
-            stroke="rgba(148, 163, 184, 0.2)"
-            strokeWidth="16"
+            stroke="rgba(148, 163, 184, 0.15)"
+            strokeWidth="14"
             strokeLinecap="round"
           />
           {/* Arco de valor */}

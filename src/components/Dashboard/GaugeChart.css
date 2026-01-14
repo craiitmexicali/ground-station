@@ -1,88 +1,197 @@
+/* ==========================================
+   GAUGE CHART - GROUND STATION CRAI
+   Sistema de Monitoreo de Vehículos Autónomos
+   ========================================== */
+
 .gauge-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  min-width: 180px;
+  padding: 0.5rem;
+  position: relative;
 }
 
+/* Status Glow Effect */
+.gauge-container[data-status="good"]::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.gauge-container[data-status="warning"]::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  animation: warning-pulse 2s ease-in-out infinite;
+}
+
+.gauge-container[data-status="danger"]::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  animation: danger-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes warning-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes danger-pulse {
+  0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+}
+
+/* Gauge Title */
 .gauge-title {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.5px;
   margin-bottom: 0.5rem;
+  text-align: center;
 }
 
+/* SVG Container */
 .gauge-svg-container {
-  width: 160px;
-  height: 90px;
   position: relative;
+  width: 100%;
+  max-width: 180px;
 }
 
 .gauge-svg {
   width: 100%;
-  height: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* Arc Animation */
+.gauge-svg path {
+  transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+}
+
+/* Value Display */
+.gauge-value-container {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
 }
 
 .gauge-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-top: -0.5rem;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 1.75rem;
+  font-weight: 700;
+  fill: #f1f5f9;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .gauge-unit {
-  font-size: 1rem;
-  font-weight: 400;
-  margin-left: 0.25rem;
-  opacity: 0.8;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  fill: #64748b;
+  font-weight: 500;
 }
 
-.gauge-percentage {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: -0.25rem;
-  opacity: 0.9;
+/* Min/Max Labels */
+.gauge-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  fill: #475569;
 }
 
-.gauge-range {
+/* Battery Percentage */
+.battery-percentage {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 1rem;
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  color: #64748b;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-/* Variantes de color para diferentes tipos */
-.gauge-container.battery .gauge-value {
-  color: #22c55e;
+.battery-icon {
+  font-size: 1rem;
 }
 
-.gauge-container.temperature .gauge-value {
-  color: #f97316;
+.battery-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #10b981;
 }
 
-.gauge-container.rpm .gauge-value {
-  color: #3b82f6;
+/* Type-specific styling */
+.gauge-container[data-type="battery"] .battery-percentage {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
-/* Animaciones */
-@keyframes pulse-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 4px currentColor);
+.gauge-container[data-type="battery"] .battery-value {
+  color: #10b981;
+}
+
+.gauge-container[data-type="battery"][data-status="warning"] .battery-percentage {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.gauge-container[data-type="battery"][data-status="warning"] .battery-value {
+  color: #f59e0b;
+}
+
+.gauge-container[data-type="battery"][data-status="danger"] .battery-percentage {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.gauge-container[data-type="battery"][data-status="danger"] .battery-value {
+  color: #ef4444;
+}
+
+/* Hover Effects */
+.gauge-container:hover .gauge-svg {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+}
+
+.gauge-container:hover .gauge-title {
+  color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gauge-svg-container {
+    max-width: 150px;
   }
-  50% {
-    filter: drop-shadow(0 0 8px currentColor);
+  
+  .gauge-value {
+    font-size: 1.5rem;
   }
-}
-
-.gauge-value.warning {
-  animation: pulse-glow 1s ease-in-out infinite;
+  
+  .gauge-title {
+    font-size: 0.8rem;
+  }
 }
